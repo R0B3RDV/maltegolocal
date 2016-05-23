@@ -9,10 +9,11 @@ package maltegolocal
 
 import (
 	"encoding/xml"
-	"strconv"
 	"fmt"
+	"strconv"
 	"strings"
 )
+
 // ############### STRUCTS #################
 
 type MaltegoEntityObj struct {
@@ -33,24 +34,24 @@ type MaltegoTransform struct {
 type DisplayInformationa struct {
 	Nameattrd string `xml:"Name,attr"`
 	Typeattrd string `xml:"Type,attr"`
-	Textd []byte `xml:",chardata"`    
+	Textd     []byte `xml:",chardata"`
 }
 
 type AdditionalFieldsa struct {
 	Matchingrulea string `xml:"MatchingRule,attr"`
-	Nameattra string `xml:"Name,attr"`
-	Typeattra string `xml:"DisplayName,attr"`
-	Texta string `xml:",chardata"`    
+	Nameattra     string `xml:"Name,attr"`
+	Typeattra     string `xml:"DisplayName,attr"`
+	Texta         string `xml:",chardata"`
 }
 
 type Entitya struct {
-	XMLName   xml.Name `xml:"Entity"`
-	Type        string      `xml:"Type,attr"`
-	Value string   `xml:"Value"`
-	Weight  int   `xml:"Weight"`
-	Dispinfo     DisplayInformationa      `xml:"DisplayInformation>Label,inline"`
-	Addfield     []AdditionalFieldsa      `xml:"AdditionalFields>Field,inline"`
-	IconURL    string  `xml:"IconURL"`
+	XMLName  xml.Name            `xml:"Entity"`
+	Type     string              `xml:"Type,attr"`
+	Value    string              `xml:"Value"`
+	Weight   int                 `xml:"Weight"`
+	Dispinfo DisplayInformationa `xml:"DisplayInformation>Label,inline"`
+	Addfield []AdditionalFieldsa `xml:"AdditionalFields>Field,inline"`
+	IconURL  string              `xml:"IconURL"`
 }
 
 type LocalTransform struct {
@@ -181,25 +182,25 @@ func (m *MaltegoTransform) ThrowExceptions() string {
 	return r
 }
 
-func (m *MaltegoEntityObj) ReturnEntity() string {	
-	r := &Entitya{Type: m.entityType, Value: m.value, Weight: m.weight, IconURL:m.iconURL}
+func (m *MaltegoEntityObj) ReturnEntity() string {
+	r := &Entitya{Type: m.entityType, Value: m.value, Weight: m.weight, IconURL: m.iconURL}
 	// Add DisplayInformation XML
 	if len(m.displayInformation) > 0 {
 		for _, e := range m.displayInformation {
 			name_, type_ := e[0], e[1]
-			r.Dispinfo = DisplayInformationa{Nameattrd:name_, Typeattrd:"text/html", Textd:[]byte("<![CDATA[" + type_ + "]]>")}
+			r.Dispinfo = DisplayInformationa{Nameattrd: name_, Typeattrd: "text/html", Textd: []byte("<![CDATA[" + type_ + "]]>")}
 		}
 	} else {
-			r.Dispinfo = DisplayInformationa{Nameattrd:"", Typeattrd:"text/html", Textd:[]byte("")}
+		r.Dispinfo = DisplayInformationa{Nameattrd: "", Typeattrd: "text/html", Textd: []byte("")}
 	}
 	// Add AdditionalFields XML
 	if len(m.AdditionalFields) > 0 {
 		for _, e := range m.AdditionalFields {
 			fieldName_, displayName_, matchingRule_, value_ := e[0], e[1], e[2], e[3]
 			if matchingRule_ == "strict" {
-				r.Addfield = append(r.Addfield,AdditionalFieldsa{Nameattra:fieldName_, Typeattra:displayName_, Texta:value_})
+				r.Addfield = append(r.Addfield, AdditionalFieldsa{Nameattra: fieldName_, Typeattra: displayName_, Texta: value_})
 			} else {
-				r.Addfield = append(r.Addfield,AdditionalFieldsa{Matchingrulea:matchingRule_,Nameattra:fieldName_, Typeattra:displayName_, Texta:value_})
+				r.Addfield = append(r.Addfield, AdditionalFieldsa{Matchingrulea: matchingRule_, Nameattra: fieldName_, Typeattra: displayName_, Texta: value_})
 			}
 		}
 	}
